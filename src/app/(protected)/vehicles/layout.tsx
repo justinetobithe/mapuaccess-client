@@ -4,16 +4,16 @@ import React, { FC } from 'react';
 
 const Layout: FC<{
     admin: React.ReactNode;
-    operator: React.ReactNode;
-}> = async ({ admin, operator }) => {
+    user: React.ReactNode;
+}> = async ({ admin, user }) => {
     const session = await getServerSession(AuthOptions);
 
     const renderContent = () => {
         switch (session?.user.role) {
             case 'admin':
                 return admin;
-            case 'operator':
-                return operator;
+            case 'user':
+                return user;
             default:
                 return null;
         }

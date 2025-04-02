@@ -2,8 +2,7 @@
 import React from 'react';
 import AppVehiclesTable from '@/components/AppStudentsTable';
 import { useQueryClient } from '@tanstack/react-query';
-
-
+ 
 const Page = () => {
 
     return (

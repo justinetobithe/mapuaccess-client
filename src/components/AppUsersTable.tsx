@@ -49,7 +49,6 @@ export default function AppUsersTable() {
   );
 
   const { mutate: deleteUser } = useDeleteUser();
-  const { mutate: updateUserStatus } = useUpdateUserStatus();
   const { mutate: updateUser } = useUpdateUser();
 
   const handleEditUser = (user: User) => {
@@ -59,16 +58,6 @@ export default function AppUsersTable() {
 
   const handleDeleteUser = (id: string) => {
     deleteUser(id.toString(), {
-      onSettled: () => {
-        queryClient.invalidateQueries({
-          queryKey: ['users']
-        });
-      }
-    });
-  };
-
-  const handleApproveUser = (id: string) => {
-    updateUserStatus({ id, status: 1 }, {
       onSettled: () => {
         queryClient.invalidateQueries({
           queryKey: ['users']
@@ -165,20 +154,6 @@ export default function AppUsersTable() {
       },
     },
     {
-      accessorKey: 'status',
-      header: 'Status',
-      cell: ({ row }) => {
-        const item = row.original;
-        return (
-          <div>
-            {item.status == 1 && (
-              <span className="text-green-500">Active</span>
-            )}
-          </div>
-        );
-      },
-    },
-    {
       id: 'actions',
       header: () => <div className='text-center'>Actions</div>,
       cell: ({ row }) => {
@@ -186,23 +161,6 @@ export default function AppUsersTable() {
         return (
           <div className="flex justify-center items-center">
             <Dialog>
-              {item.status == 0 && (
-                <AppConfirmationDialog
-                  title='Approve User'
-                  description={`Are you sure you want to activate the user "${item.first_name} ${item.last_name}"?`}
-                  buttonElem={
-                    <Button
-                      className="text-white"
-                      variant="success"
-                      type='button'
-                      style={{ marginLeft: '8px' }}
-                    >
-                      <UserCheck size={20} />
-                    </Button>
-                  }
-                  handleDialogAction={() => handleApproveUser(item.id!)}
-                />
-              )}
               <DialogTrigger asChild>
                 <TooltipProvider>
                   <Tooltip>

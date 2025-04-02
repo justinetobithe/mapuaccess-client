@@ -10,7 +10,7 @@ const nextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'mapuaccess.xyz',
+        hostname: 'mapuaccess.site',
         port: '',
         pathname: '/**',
       },

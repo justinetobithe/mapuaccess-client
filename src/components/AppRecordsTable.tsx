@@ -18,11 +18,14 @@ import { Skeleton } from '@/components/ui/skeleton';
 import AppTable from '@/components/AppTable';
 import { ArrowUpDown, Pencil, Trash } from 'lucide-react';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
-import { Student } from '@/types/Student';
-import { useStudents } from '@/lib/StudentAPI';
+import { Record } from '@/types/Record';
+import { useRecords } from '@/lib/RecordAPI';
+import AppConfirmationDialog from './AppConfirmationDialog';
+import { toast } from '@/components/ui/use-toast';
 import { useQueryClient } from '@tanstack/react-query';
+import { format } from "date-fns";
 
-export default function AppStudentsTable() {
+export default function AppRecordsTable() {
     const queryClient = useQueryClient();
     const [{ pageIndex, pageSize }, setPagination] = useState<PaginationState>({
         pageIndex: 0,
@@ -31,7 +34,7 @@ export default function AppStudentsTable() {
     const [searchKeyword, setSearchKeyword] = React.useState('');
     const [sorting, setSorting] = useState<SortingState>([]);
 
-    const { data, isLoading } = useStudents(
+    const { data, isLoading } = useRecords(
         pageIndex + 1,
         pageSize,
         searchKeyword,
@@ -39,55 +42,74 @@ export default function AppStudentsTable() {
         Boolean(sorting.map((item) => item.desc).join(','))
     );
 
-    const columns: ColumnDef<Student>[] = [
+    const columns: ColumnDef<Record>[] = [
         {
-            accessorKey: 'student',
+            accessorKey: 'owner',
             header: ({ column }) => (
                 <Button
                     variant='ghost'
                     className='pl-0 text-left hover:!bg-transparent'
                     onClick={() => column.toggleSorting()}
                 >
-                    Student
+                    Owner
+                    <ArrowUpDown className='ml-2 h-4 w-4' />
+                </Button>
+            ),
+            cell: ({ row }) => row.original.vehicle_registration?.vehicle?.user?.first_name + " " + row.original.vehicle_registration?.vehicle?.user?.last_name,
+            enableSorting: true,
+        },
+        {
+            accessorKey: 'vehicle',
+            header: ({ column }) => (
+                <Button
+                    variant='ghost'
+                    className='pl-0 text-left hover:!bg-transparent'
+                    onClick={() => column.toggleSorting()}
+                >
+                    Vehicle
                     <ArrowUpDown className='ml-2 h-4 w-4' />
                 </Button>
             ),
             cell: ({ row }) => {
-                const { first_name, last_name } = row.original.user || {};
-                return `${first_name} ${last_name}`;
+                const vehicle = row.original.vehicle_registration?.vehicle;
+                return `${vehicle?.plate_number} ${vehicle?.make} ${vehicle?.model} ${vehicle?.year}`;
             },
             enableSorting: true,
         },
         {
-            accessorKey: 'student_number',
+            accessorKey: 'type',
             header: ({ column }) => (
                 <Button
                     variant='ghost'
                     className='pl-0 text-left hover:!bg-transparent'
                     onClick={() => column.toggleSorting()}
                 >
-                    Student No.
+                    Type
                     <ArrowUpDown className='ml-2 h-4 w-4' />
                 </Button>
             ),
-            cell: ({ row }) => row.original.student_number,
+            cell: ({ row }) =>
+                row.original.type === 'entry' ? "Entry" : "Exit",
             enableSorting: true,
         },
-        // {
-        //     accessorKey: 'strand',
-        //     header: ({ column }) => (
-        //         <Button
-        //             variant='ghost'
-        //             className='pl-0 text-left hover:!bg-transparent'
-        //             onClick={() => column.toggleSorting()}
-        //         >
-        //             Strand
-        //             <ArrowUpDown className='ml-2 h-4 w-4' />
-        //         </Button>
-        //     ),
-        //     cell: ({ row }) => row.original.strand?.name,
-        //     enableSorting: true,
-        // },
+        {
+            accessorKey: 'recorded_at',
+            header: ({ column }) => (
+                <Button
+                    variant='ghost'
+                    className='pl-0 text-left hover:!bg-transparent'
+                    onClick={() => column.toggleSorting()}
+                >
+                    Recorded At
+                    <ArrowUpDown className='ml-2 h-4 w-4' />
+                </Button>
+            ),
+            cell: ({ row }) =>
+                row.original.recorded_at
+                    ? format(new Date(row.original.recorded_at), 'MMM dd, yyyy')
+                    : '—',
+            enableSorting: true,
+        },
     ];
 
     const pagination = React.useMemo(() => ({ pageIndex, pageSize }), [pageIndex, pageSize]);

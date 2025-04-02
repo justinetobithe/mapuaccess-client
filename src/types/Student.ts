@@ -1,4 +1,4 @@
-import { Strand } from "./Strand";
+ 
 import User from "./User";
 
 export interface Student {
@@ -8,5 +8,4 @@ export interface Student {
     student_number: string;
 
     user?: User;
-    strand?: Strand;
 }

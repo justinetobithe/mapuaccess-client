@@ -1,17 +1,17 @@
 import { api } from '@/lib/api';
 import { toast } from '@/components/ui/use-toast';
 import Response from '@/types/Response';
-import { Strand } from '@/types/Strand';
+import { Semester } from '@/types/Semester';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-export const getStrands = async (
+export const getSemesters = async (
     page: number = 1,
     pageSize: number = 10,
     filter = '',
     sortColumn = '',
     sortDesc = false
-): Promise<{ data: Strand[]; last_page: number }> => {
-    const response = await api.get<{ data: { data: Strand[]; current_page: number; last_page: number; total: number } }>(`/api/strands`, {
+): Promise<{ data: Semester[]; last_page: number }> => {
+    const response = await api.get<{ data: { data: Semester[]; current_page: number; last_page: number; total: number } }>(`/api/semesters`, {
         params: {
             page,
             ...(pageSize && { page_size: pageSize }),
@@ -29,22 +29,22 @@ export const getStrands = async (
     };
 };
 
-export const createStrand = async (inputs: Strand): Promise<Response> => {
-    const response = await api.post<Response>(`/api/strand`, inputs);
+export const createSemester = async (inputs: Semester): Promise<Response> => {
+    const response = await api.post<Response>(`/api/semester`, inputs);
     return response.data;
 };
 
-export const updateStrand = async (id: number, inputs: Strand): Promise<Response> => {
-    const response = await api.put<Response>(`/api/strand/${id}`, inputs);
+export const updateSemester = async (id: number, inputs: Semester): Promise<Response> => {
+    const response = await api.put<Response>(`/api/semester/${id}`, inputs);
     return response.data;
 };
 
-export const deleteStrand = async (id: number): Promise<Response> => {
-    const response = await api.delete(`/api/strand/${id}`);
+export const deleteSemester = async (id: number): Promise<Response> => {
+    const response = await api.delete(`/api/semester/${id}`);
     return response.data;
 };
 
-export const useStrands = (
+export const useSemesters = (
     page: number = 1,
     pageSize: number = 10,
     globalFilter = '',
@@ -52,22 +52,21 @@ export const useStrands = (
     sortDesc = false
 ) =>
     useQuery({
-        queryKey: ['strands', page, pageSize, globalFilter, sortColumn, sortDesc],
-        queryFn: async (): Promise<{ data: Strand[]; last_page: number }> => {
-            return await getStrands(page, pageSize, globalFilter, sortColumn, sortDesc);
+        queryKey: ['semesters', page, pageSize, globalFilter, sortColumn, sortDesc],
+        queryFn: async (): Promise<{ data: Semester[]; last_page: number }> => {
+            return await getSemesters(page, pageSize, globalFilter, sortColumn, sortDesc);
         },
     });
 
-export const useCreateStrand = () => {
+export const useCreateSemester = () => {
     const queryClient = useQueryClient();
-    ``
     return useMutation({
-        mutationFn: async (inputs: Strand) => {
-            return await createStrand(inputs);
+        mutationFn: async (inputs: Semester) => {
+            return await createSemester(inputs);
         },
         onSuccess: (response) => {
             if (response && response.status === "success") {
-                queryClient.invalidateQueries({ queryKey: ['strands'] });
+                queryClient.invalidateQueries({ queryKey: ['semesters'] });
                 toast({
                     variant: 'success',
                     description: response.message,
@@ -77,10 +76,10 @@ export const useCreateStrand = () => {
     });
 };
 
-export const useUpdateStrand = () => {
+export const useUpdateSemester = () => {
     return useMutation({
-        mutationFn: async ({ id, strandData }: { id: number; strandData: Strand }) => {
-            return await updateStrand(id, strandData);
+        mutationFn: async ({ id, semesterData }: { id: number; semesterData: Semester }) => {
+            return await updateSemester(id, semesterData);
         },
         onSuccess: (response) => {
             if (response && response.status === "success") {
@@ -93,10 +92,10 @@ export const useUpdateStrand = () => {
     });
 };
 
-export const useDeleteStrand = () => {
+export const useDeleteSemester = () => {
     return useMutation({
         mutationFn: async (id: number) => {
-            return await deleteStrand(id);
+            return await deleteSemester(id);
         },
         onSuccess: (response) => {
             if (response && response.status === "success") {

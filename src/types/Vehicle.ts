@@ -3,15 +3,18 @@ import User from "./User";
 
 export interface Vehicle {
     id?: number;
-    driver_id?: number;
-    license_plate?: string;
-    brand?: string;
+    user_id?: number;
+    plate_number?: string;
+    make?: string;
     model?: string;
     year?: string;
-    capacity?: string;
+    type?: string;
+    
+    registration_number?: string;
 
-    driver?: Driver
+    is_registered?: boolean | number;
 
-    remaining_capacity?: string
+    image?: string;
 
+    user?: User;
 }
